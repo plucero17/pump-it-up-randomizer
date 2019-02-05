@@ -104,14 +104,17 @@ def Show_GUI():
 		
 			def return_value(event='<Button-1>'):
 				if winner.get() != 0:
-					Selector_Screen.match_winner = Selector_Screen.player_array[winner.get() - 1]
+					if winner.get() != 3:
+						Selector_Screen.match_winner = Selector_Screen.player_array[winner.get() - 1]
+					else:
+						Selector_Screen.match_winner = "Draw"
 					self.win.destroy()
 					
 			self.win = Toplevel(parent)
 			self.win.wm_title("Select Winner")
 			
-			width = 415
-			height = 260
+			width = 360
+			height = 320
 			screen_width = self.win.winfo_screenwidth()
 			screen_height = self.win.winfo_screenheight()
 			x = (screen_width/2) - (width/2)
@@ -132,10 +135,13 @@ def Show_GUI():
 
 			self.Player_One__Winner = Radiobutton(self.Inner_Frame, text=Selector_Screen.player_array[0], variable=winner, value=1)
 			self.Player_Two__Winner = Radiobutton(self.Inner_Frame, text=Selector_Screen.player_array[1], variable=winner, value=2)
+			self.Draw = Radiobutton(self.Inner_Frame, text="Draw", variable=winner, value=3)
 			self.Player_One__Winner.grid(row=1,column=0,pady=(25,25))
 			self.Player_Two__Winner.grid(row=1,column=1,pady=(25,25))
+			self.Draw.grid(row=2,column=0,pady=(0,25),columnspan=2)
 			self.Player_One__Winner.configure(font=("TkDefaultFont",24))
 			self.Player_Two__Winner.configure(font=("TkDefaultFont",24))
+			self.Draw.configure(font=("TkDefaultFont",24))
 			
 			Select_Button = Button(self.Inner_Frame, image=self.Continue, command=return_value)
 			Select_Button.grid(row=3, column=0)
@@ -227,6 +233,7 @@ def Show_GUI():
 						song_name = song_name + words + " "
 					
 					song_name = song_name[:-1]
+					#print song_name
 					song_composer = song_information[1]
 					song_bpm      = song_information[2]
 					

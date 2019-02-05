@@ -1,0 +1,5 @@
+To install your required modules, make sure python and pip are in your system path.  I recommend looking up a guide for this.
+
+Once installed, open PowerShell or Command Prompt, navigate to this folder, and do "pip install -r requirements.txt".
+
+You will now have all the required python packages.
