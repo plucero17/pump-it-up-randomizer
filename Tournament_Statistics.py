@@ -108,14 +108,13 @@ def Card_Information_GUI(meta_path):
 			
 
 			# hotkeys
-			self.master.bind("<Return>", self.Exit_Program)
+			self.master.bind("<Return>", self.Start_Program)
 			self.master.bind("<Escape>", self.Exit_Program)
 	
 	# starts GUI
 	Generator_Root = Tkinter.Tk()
 	Generator_Window = Generator_Screen(Generator_Root)
 	Generator_Root.mainloop()
-	
 	return Generator_Screen.PLAYER,Generator_Screen.TOURNAMENT,Generator_Screen.bad_exit
 def Generate_Player_Card(PLAYER,TOURNAMENT,meta_path):
 	def return_song_information(song_array,diff_array,mode_array,player_array,tournament_array,player="All",Tournament="All"):
@@ -126,7 +125,7 @@ def Generate_Player_Card(PLAYER,TOURNAMENT,meta_path):
 			songs  = []
 			levels = []
 			for i in range(len(song_array)):
-				if (player in player_array[i+1] or player == "All") and Tournament in [tournament_array[i+1],"All"]:
+				if (player in [player_array[i][0].strip(),player_array[i][1].strip()] or player == "All") and Tournament in [tournament_array[i],"All"]:
 					if mode_array[i] == "Singles":
 						mode = 'S'
 					elif mode_array[i] == "Doubles":
@@ -151,7 +150,7 @@ def Generate_Player_Card(PLAYER,TOURNAMENT,meta_path):
 			player_mode_array = []
 			
 			for i in range(len(diff_array)):
-				if (player in player_array[i+1] or player == "All") and Tournament in [tournament_array[i+1],"All"]:
+				if (player in [player_array[i][0].strip(),player_array[i][1].strip()] or player == "All") and Tournament in [tournament_array[i],"All"]:
 					if mode_array[i] == "Singles":
 						mode = 'S'
 					elif mode_array[i] == "Doubles":
@@ -179,20 +178,30 @@ def Generate_Player_Card(PLAYER,TOURNAMENT,meta_path):
 		try:
 			win_counts = Counter()
 			for i in range(len(winner_array)):
-				if Tournament in [tournament_array[i],"All"]:
+				if Tournament in [tournament_array[i],"All"] and player in [player_array[i][0].strip(),player_array[i][1].strip()]:
 					win_counts[winner_array[i].strip()] += 1
-
+			
 			player_counts = Counter()
 			for i in range(len(player_array)):
 				if Tournament in [tournament_array[i],"All"]:
 					for players in player_array[i]:
+						#print players
 						player_counts[players.strip()] += 1
-			
+						
+			#print player_counts	
+			games_won = games_played = 0
 			for indexes in win_counts:
 				if indexes == player:
-					win_percent = (float(win_counts[indexes])/float(player_counts[indexes]))*100.00
-					printstring = [ "Number of games played: %d." % (player_counts[indexes]),"Number of games won: %d." % (win_counts[indexes]),
-						"Average win rate: %.2f%%. (%d wins %d losses)" % (win_percent,win_counts[indexes],player_counts[indexes]-win_counts[indexes])]
+					games_won = win_counts[indexes]
+					break	
+			for indexes in player_counts:
+				if indexes == player:
+					games_played = player_counts[indexes]
+					break
+					
+			win_percent = (float(games_won)/float(games_played))*100.00
+			printstring = [ "Number of games played: %d." % (games_played),"Number of games won: %d." % (games_won),
+				"Average win rate: %.2f%%. (%d wins %d losses)" % (win_percent,games_won,games_played-games_won)]
 			return printstring
 						
 		except:
@@ -201,9 +210,9 @@ def Generate_Player_Card(PLAYER,TOURNAMENT,meta_path):
 	mode_array = []
 	diff_array = []
 
-	tournament_array = ["All"]
-	winner_array     = ["All"]
-	player_array     = ["All"]
+	tournament_array = []
+	winner_array     = []
+	player_array     = []
 
 	with open(meta_path, 'rb') as csvfile:
 		reader = csv.reader(csvfile,delimiter=',',quotechar='|')
