@@ -63,6 +63,8 @@ def Create_Log_File(tournament_name,tournament_location,tournament_organizer):
 	# searches for tournament log file and creates/opens it
 	file_path = "%s/%s" % (log_path, clean_tournament_name)
 	Tournament_File = open(file_path,'a+')
+	meta_path = "%s/%s" % (log_path, "Meta_Information.csv")
+	Meta_File = open(meta_path, 'a+')
 	
 	# if the file was just created, generate tournament metadata
 	if os.path.getsize(file_path) == 0:
@@ -76,7 +78,7 @@ def Create_Log_File(tournament_name,tournament_location,tournament_organizer):
 		Tournament_File.write("======================\n\n\n")
 		
 	# return the opened file
-	return Tournament_File
+	return Tournament_File, Meta_File
 	
 # the main script and gui.  contains randomizer and score recording scripts
 def Show_GUI():
@@ -156,15 +158,6 @@ def Show_GUI():
 			self.win = Toplevel(parent)
 			self.win.wm_title("Select Winner")
 			
-			# centers window in screen and sets geometry
-			width = 360
-			height = 320
-			screen_width = self.win.winfo_screenwidth()
-			screen_height = self.win.winfo_screenheight()
-			x = (screen_width/2) - (width/2)
-			y = (screen_height/2) - (height/2)
-			self.win.geometry('%dx%d+%d+%d' % (width, height, x, y))
-			
 			# button images
 			self.Continue = Tkinter.PhotoImage(file="./Graphics/Continue.gif")
 			self.Cancel   = Tkinter.PhotoImage(file="./Graphics/Cancel.gif")
@@ -243,6 +236,17 @@ def Show_GUI():
 			Tournament_Log.write("Players: %s\n" % (name_list))
 			Tournament_Log.write("Winner: %s\n" % (Selector_Screen.match_winner))
 			Tournament_Log.write("Time of Match: %s\n\n" % (time_of_match))
+			
+			# writes results to meta file for long-term statistics
+			Meta_Log.write("%s,%s,%s,%s,%s,%s,\n" % ( 
+				Selector_Screen.current_song, 
+				Selector_Screen.diff_mode, 
+				Selector_Screen.current_diff[1:], 
+				tournament_name,
+				Selector_Screen.match_winner,
+				name_list
+				)
+			)
 			
 			# resets song
 			Selector_Screen.current_song = "none"
@@ -366,15 +370,6 @@ def Show_GUI():
 			# creates icon in top left corner
 			if os.name == 'nt':
 				self.master.iconbitmap("./Graphics/icon.ico")
-				
-			# center and set geometry for master window
-			width = 1280+5
-			height = 1080
-			screen_width = self.master.winfo_screenwidth()
-			screen_height = self.master.winfo_screenheight()
-			x = (screen_width/2) - (width/2)
-			y = (screen_height/2) - (height/2)
-			self.master.geometry('%dx%d+%d+%d' % (width, height, x, y))
 
 			# initialize Singles/Doubles variable
 			self.Game_Mode = IntVar()
@@ -496,7 +491,7 @@ def Show_GUI():
 	
 # read config file, pass information to tournament log, and start randomizer GUI
 tournament_name,tournament_location,tournament_organizer = Obtain_Tournament_Information(config_path)
-Tournament_Log = Create_Log_File(tournament_name,tournament_location,tournament_organizer)
+Tournament_Log, Meta_Log = Create_Log_File(tournament_name,tournament_location,tournament_organizer)
 Show_GUI()	
 
 # close tournament log file

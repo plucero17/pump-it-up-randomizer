@@ -1,0 +1,36 @@
+Tournament Name: Repo Test Tournament
+Tournament Location: Phoenix, Arizona, USA
+Tournament Organizer: RUSH150
+Date Created: 2019-02-11
+
+
+======================
+List of Matches Played
+======================
+
+
+Song: Rock the House S16
+Players: Paul, Edgar
+Winner: Paul
+Time of Match: 12:46 PM
+
+Song: Energizer S16
+Players: Paul, Albert
+Winner: Paul
+Time of Match: 12:46 PM
+
+Song: Caprice of Otada S17
+Players: Paul, Dennec
+Winner: Paul
+Time of Match: 12:46 PM
+
+Song: Caprice of Otada S17
+Players: Edgar, Angel
+Winner: Angel
+Time of Match: 12:47 PM
+
+Song: Pump Me Amadeus S17
+Players: Angel, Albert
+Winner: Angel
+Time of Match: 12:47 PM
+

@@ -1,3 +1,3 @@
-Tournament Name: Enter Your Tournament Name Here
-Tournament Location: City, State, Country
-Tournament Organizer: Name or Username
+Tournament Name: Repo Test Tournament
+Tournament Location: Phoenix, Arizona, USA
+Tournament Organizer: RUSH150
