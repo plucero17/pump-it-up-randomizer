@@ -11,23 +11,33 @@ from PIL import ImageTk
 from random import randint
 from Tkinter import *
 import Tkinter,tkFileDialog, tkMessageBox
+
+# global values
 meta_path = "./Tournament_Logs/Meta_Information.csv"
 
+# generator screen that returns information to generate the card with
 def Card_Information_GUI(meta_path):
+
+	# generator gui
 	class Generator_Screen:
+	
+		# important variables to return
 		PLAYER = " "
 		TOURNAMENT = " "
 		bad_exit = True
 		
+		# exits the program
 		def Exit_Program(self,event='<Button-1>'):
 			self.master.destroy()
 
+		# returns player name, tournament name, and exits program
 		def Start_Program(self,event='<Button-1>'):
 			Generator_Screen.PLAYER = self.player_var.get()
 			Generator_Screen.TOURNAMENT = self.tournament_var.get()
 			Generator_Screen.bad_exit = False
 			self.master.destroy()
-			
+		
+		# retrieves player names and tournament names from meta csv
 		def Retrieve_Information(self,meta_path):
 			player_array = ["None"]
 			tournament_array = ["All"]
@@ -42,7 +52,8 @@ def Card_Information_GUI(meta_path):
 							if people.strip() not in player_array and len(people) > 0:
 								player_array.append(people.strip())
 			return player_array,tournament_array
-			
+		
+		# initialize gui
 		def __init__(self,master):
 			
 			# configure master window
@@ -116,7 +127,11 @@ def Card_Information_GUI(meta_path):
 	Generator_Window = Generator_Screen(Generator_Root)
 	Generator_Root.mainloop()
 	return Generator_Screen.PLAYER,Generator_Screen.TOURNAMENT,Generator_Screen.bad_exit
+
+# creates player card
 def Generate_Player_Card(PLAYER,TOURNAMENT,meta_path):
+
+	# returns most played song (name) and most played level (name, mode, difficulty)
 	def return_song_information(song_array,diff_array,mode_array,player_array,tournament_array,player="All",Tournament="All"):
 		try:
 			song_counts  = Counter()
@@ -143,7 +158,8 @@ def Generate_Player_Card(PLAYER,TOURNAMENT,meta_path):
 			return printstring
 		except:
 			return []
-		
+	
+	# returns average difficulty, highest difficulty, and most played difficulty
 	def return_difficulty_information(diff_array,mode_array,player_array,tournament_array,player="All",Tournament="All"):
 		try:
 			player_diff_array = []
@@ -174,6 +190,7 @@ def Generate_Player_Card(PLAYER,TOURNAMENT,meta_path):
 		except:
 			return []
 		
+	# returns number of games played, and win rate (games won, games lost)
 	def return_win_rate(winner_array,player_array,tournament_array,player="All",Tournament="All"):
 		try:
 			win_counts = Counter()
@@ -206,14 +223,16 @@ def Generate_Player_Card(PLAYER,TOURNAMENT,meta_path):
 						
 		except:
 			return []
+	
+	# initialized arrays
 	song_array = []
 	mode_array = []
 	diff_array = []
-
 	tournament_array = []
 	winner_array     = []
 	player_array     = []
 
+	# opens meta file and takes all information
 	with open(meta_path, 'rb') as csvfile:
 		reader = csv.reader(csvfile,delimiter=',',quotechar='|')
 		for row in reader:
@@ -224,40 +243,43 @@ def Generate_Player_Card(PLAYER,TOURNAMENT,meta_path):
 			winner_array.append(row[4])
 			player_array.append([players for players in row[5:] if len(players) > 0])
 
+	# initialized information for player card
 	height = 780
 	width = 640
-	filler_string = ''
-	for characters in PLAYER:
-		filler_string += "="
-	filler_string = filler_string [:-2]
 
+	# retrieves information in segments
 	song_info = return_song_information(song_array,diff_array,mode_array,player_array,tournament_array,PLAYER,TOURNAMENT)
 	diff_info = return_difficulty_information(diff_array,mode_array,player_array,tournament_array,PLAYER,TOURNAMENT)
 	win_info  = return_win_rate(winner_array,player_array,tournament_array,PLAYER,TOURNAMENT)
 
+	# randomly selects card theme
 	splash_array = ["./Graphics/Top_Generator_1.jpg","./Graphics/Top_Generator_2.jpg"]
 	splash_path = random.choice(splash_array)
-
 	accent_array = [(78,116,16),(32,6,96)]
 	accent_color = accent_array[splash_array.index(splash_path)]
 
+	# adds lgo to splash image
 	logo_path = "./Graphics/Prime2_Logo.png"
 	splash_image = cv2.imread(splash_path)
 	logo_image = cv2.imread(logo_path)
 
+	# resizes splash image and initializes player card
 	splash_image = imutils.resize(splash_image,width=width)
 	logo_image = imutils.resize(logo_image,width=100)
 	blank_image = np.zeros((height,width,3), np.uint8)
 	blank_image[0:splash_image.shape[0], 0:splash_image.shape[1]] = splash_image
 
+	# font information for card text
 	font                   = cv2.FONT_HERSHEY_SIMPLEX
 	fontScale              = 0.75
 	fontColor              = (255,255,255)
 	lineType               = 2
 
+	# blank space for player name
 	cv2.rectangle(blank_image,(25,25),(25+275,splash_image.shape[0]-25),(0,0,0),-1)
 	cv2.rectangle(blank_image,(25,25),(25+275,splash_image.shape[0]-25),(255,255,255),3)
 
+	# creates header for player card
 	for j in range(logo_image.shape[0]):
 		for i in range(logo_image.shape[1]):
 			if logo_image[j][i][0] != 0 or logo_image[j][i][1] != 0 or logo_image[j][i][2] != 0:
@@ -265,9 +287,13 @@ def Generate_Player_Card(PLAYER,TOURNAMENT,meta_path):
 				blank_image[j][i+25][1] = logo_image[j][i][1]
 				blank_image[j][i+25][2] = logo_image[j][i][2]
 		
+	# adds player name to player card
 	cv2.putText(blank_image,PLAYER, (50,100),font,2*fontScale,fontColor,lineType*2)
+	
+	# initializes offset value
 	y_offset = 25+splash_image.shape[0]
-	#cv2.rectangle(blank_image,(0,25+y_offset),(width,65+y_offset),accent_color,-1)
+	
+	# saves tournament name in space format instead of '-' format
 	if TOURNAMENT == "All":
 		tournament_info = "Lifetime Record"
 		TOURNAMENT = "Lifetime_Record"
@@ -280,13 +306,18 @@ def Generate_Player_Card(PLAYER,TOURNAMENT,meta_path):
 			else:
 				sublist += '-'
 		TOURNAMENT = sublist
-		
+	
+	# adds border and tournament name to player card
 	cv2.rectangle(blank_image,(0,y_offset-25),(width,40+y_offset-25),accent_color,-1)
 	cv2.putText(blank_image,tournament_info, (10,y_offset),font,fontScale,fontColor,lineType)
+	
+	# adds games played and win rate to player card
 	y_offset += 40
 	for elements in win_info:
 		cv2.putText(blank_image,elements,(10,y_offset),font,fontScale,fontColor,lineType)
 		y_offset += 40
+		
+	# adds song information to player card
 	y_offset += 40
 	for elements in song_info:
 		if "Most" in elements:
@@ -296,20 +327,25 @@ def Generate_Player_Card(PLAYER,TOURNAMENT,meta_path):
 		else:
 			cv2.putText(blank_image,elements, (10,y_offset),font,fontScale,fontColor,lineType)
 			y_offset += 80
-	#y_offset += 40
+			
+	# adds border for song difficulties
 	cv2.rectangle(blank_image,(0,y_offset-25),(width,40+y_offset-25),accent_color,-1)
 	cv2.putText(blank_image,"Song Difficulties:",(10,y_offset),font,fontScale,fontColor,lineType)
+	
+	# adds difficulty information to player card
 	y_offset += 40
 	for elements in diff_info:
 		cv2.putText(blank_image,elements,(10,y_offset),font,fontScale,fontColor,lineType)
 		y_offset += 40
 	y_offset += 40
 		
+	# saves player card and displays on screen
 	cv2.imwrite("./Player_Cards/%s_%s.jpg" % (PLAYER,TOURNAMENT), blank_image)
 	cv2.imshow("Frame",blank_image)
 	cv2.waitKey(0)
 	cv2.destroyAllWindows()
 
+# calls generator gui and generates player card
 PLAYER, TOURNAMENT,CONTINUE = Card_Information_GUI(meta_path)
 if not CONTINUE:
 	Generate_Player_Card(PLAYER,TOURNAMENT,meta_path)
