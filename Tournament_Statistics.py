@@ -1,14 +1,18 @@
+# base modules
 import os
 import csv
+import random
+from random import randint
+from collections import Counter
+
+# image processing modules
 import cv2
 import imutils
-import random
 import numpy as np
-from pprint import pprint
-from collections import Counter
+
+# gui specific modules
 from PIL import Image as Img
 from PIL import ImageTk
-from random import randint
 from Tkinter import *
 import Tkinter,tkFileDialog, tkMessageBox
 

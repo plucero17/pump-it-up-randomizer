@@ -1,12 +1,16 @@
-# import modules
-import cv2
-import glob
+# base modules
 import os
+import glob
 import datetime
 from datetime import date
+from random import randint
+
+# image processing modules
+import cv2
+
+# gui specific modules
 from PIL import Image as Img
 from PIL import ImageTk
-from random import randint
 from Tkinter import *
 import Tkinter,tkFileDialog, tkMessageBox
 
