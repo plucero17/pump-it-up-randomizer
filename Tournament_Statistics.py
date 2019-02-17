@@ -1,16 +1,19 @@
+# import modules
 import os
 import csv
 import cv2
 import imutils
 import random
 import numpy as np
-from pprint import pprint
+
 from collections import Counter
 from PIL import Image as Img
 from PIL import ImageTk
 from random import randint
 from Tkinter import *
 import Tkinter,tkFileDialog, tkMessageBox
+
+# global meta path
 meta_path = "./Tournament_Logs/Meta_Information.csv"
 
 def Card_Information_GUI(meta_path):
@@ -226,10 +229,6 @@ def Generate_Player_Card(PLAYER,TOURNAMENT,meta_path):
 
 	height = 780
 	width = 640
-	filler_string = ''
-	for characters in PLAYER:
-		filler_string += "="
-	filler_string = filler_string [:-2]
 
 	song_info = return_song_information(song_array,diff_array,mode_array,player_array,tournament_array,PLAYER,TOURNAMENT)
 	diff_info = return_difficulty_information(diff_array,mode_array,player_array,tournament_array,PLAYER,TOURNAMENT)
@@ -247,6 +246,7 @@ def Generate_Player_Card(PLAYER,TOURNAMENT,meta_path):
 
 	splash_image = imutils.resize(splash_image,width=width)
 	logo_image = imutils.resize(logo_image,width=100)
+	
 	blank_image = np.zeros((height,width,3), np.uint8)
 	blank_image[0:splash_image.shape[0], 0:splash_image.shape[1]] = splash_image
 
@@ -266,8 +266,9 @@ def Generate_Player_Card(PLAYER,TOURNAMENT,meta_path):
 				blank_image[j][i+25][2] = logo_image[j][i][2]
 		
 	cv2.putText(blank_image,PLAYER, (50,100),font,2*fontScale,fontColor,lineType*2)
+	
 	y_offset = 25+splash_image.shape[0]
-	#cv2.rectangle(blank_image,(0,25+y_offset),(width,65+y_offset),accent_color,-1)
+
 	if TOURNAMENT == "All":
 		tournament_info = "Lifetime Record"
 		TOURNAMENT = "Lifetime_Record"
